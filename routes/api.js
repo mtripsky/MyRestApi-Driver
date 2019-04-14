@@ -4,7 +4,7 @@ const Driver = require('../models/drivers');
 
 // get list of drivers from the db
 router.get('/drivers', function(req, res, next){
-  const { lng, lat } = req.query;
+  const { lng, lat, maxDist } = req.query;
    Driver.aggregate([{
      $geoNear: {
         near: {
@@ -13,7 +13,7 @@ router.get('/drivers', function(req, res, next){
           },
           spherical: true,
           distanceField: 'distance',
-          maxDistance: 400000
+          maxDistance: parseFloat(maxDist)*1000
         }
     }]).then(function(drivers){
           res.send(drivers)})
@@ -22,8 +22,6 @@ router.get('/drivers', function(req, res, next){
 
 // add a driver into the db
 router.post('/drivers', function(req, res, next){
-  //let driver = new Driver(req.body);  // This two lines can be simplified by
-  // driver.save();                     // Driver.create(req.body)
   Driver.create(req.body).then(function(driver){
     res.send(driver);
   }).catch(next);

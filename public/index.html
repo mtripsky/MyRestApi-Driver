@@ -45,6 +45,8 @@
                             <input type="text" ref="lat" placeholder="latitude" required />
                             <label>Enter your Longitude:</label>
                             <input type="text" ref="lng" placeholder="longitude" required />
+                            <label>Enter search area [km]:</label>
+                            <input type="text" ref="maxDistance" placeholder="40"/>
                             <input type="submit" value="Find Drivers" />
                         </form>
                         <ul>{drivers}</ul>
@@ -55,7 +57,8 @@
                 e.preventDefault();
                 let lng = this.refs.lng.value;
                 let lat = this.refs.lat.value;
-                fetch("/api/drivers?lng=" + lng + "&lat=" + lat).then(function(data){
+                let maxDist = this.refs.maxDistance.value;
+                fetch("/api/drivers?lng=" + lng + "&lat=" + lat + "&maxDist=" + maxDist).then(function(data){
                     return data.json();
                 }).then( json => {
                     this.setState({
