@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Drivergo</title>
+        <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet"/>
+        <link href="/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <h1 class="title">DriverGo - a Driver REST API</h1>
+        <div id="homepage">
+            <h1>Hire a driver in your area!</h1>
+            <div id="drivers"></div>
+        </div>
+
+        <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+        <script src="https://unpkg.com/react@15/dist/react.js"></script>
+        <script src="https://unpkg.com/react-dom@15/dist/react-dom.js"></script>
+
+        <!-- Create React Component -->
+        <script type="text/babel">
+
+        var Drivers = React.createClass({
+            getInitialState: function(){
+                return({
+                    drivers: []
+                });
+            },
+            render: function(){
+                var drivers = this.state.drivers;
+                drivers = drivers.map(function(driver, index){
+                    return(
+                        <li key={index}>
+                            <span className={driver.available}></span>
+                            <span className="name">{driver.name}</span>
+                            <span className="car">{driver.car}</span>
+                            <span className="dist">{Math.floor(driver.distance / 1000)} km</span>
+                        </li>
+                    );
+                });
+                return(
+                    <div id="driver-container">
+                        <form id="search" onSubmit={this.handleSubmit}>
+                            <label>Enter your Latitude:</label>
+                            <input type="text" ref="lat" placeholder="latitude" required />
+                            <label>Enter your Longitude:</label>
+                            <input type="text" ref="lng" placeholder="longitude" required />
+                            <input type="submit" value="Find Drivers" />
+                        </form>
+                        <ul>{drivers}</ul>
+                    </div>
+                );
+            },
+            handleSubmit: function(e){
+                e.preventDefault();
+                let lng = this.refs.lng.value;
+                let lat = this.refs.lat.value;
+                fetch("/api/drivers?lng=" + lng + "&lat=" + lat).then(function(data){
+                    return data.json();
+                }).then( json => {
+                    this.setState({
+                        drivers: json
+                    });
+                    console.log(json);
+                });
+            }
+        });
+        ReactDOM.render(<Drivers />, document.getElementById("drivers"));
+        </script>
+    </body>
+</html>
